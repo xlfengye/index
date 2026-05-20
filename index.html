@@ -266,8 +266,8 @@
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border);
-            aspect-ratio: 16/9;
-            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            aspect-ratio: 4/3;
+            background: #1a1f2e;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -916,32 +916,60 @@
             });
         });
 
-        // ========== 动态获取版本号（从 PythonAnywhere） ==========
+        // ========== 动态获取版本号（从 GitHub） ==========
         async function fetchVersion() {
             try {
-                const response = await fetch('https://2476083228.pythonanywhere.com/api/version');
-                if (!response.ok) throw new Error('获取失败');
+                console.log('开始从 GitHub 获取版本号...');
+                const response = await fetch('https://raw.githubusercontent.com/xlfengye/gengxin/main/version.json');
+                console.log('API 响应状态:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const data = await response.json();
+                console.log('GitHub 返回数据:', data);
+                console.log('data.version:', data.version);
+                
                 const version = data.version || '1.0.0';
                 
                 // 更新 Hero 区域版本号
                 const heroVersion = document.getElementById('hero-version');
                 if (heroVersion) {
                     heroVersion.textContent = `v${version} 稳定版发布`;
+                    console.log('已更新 Hero 版本号为:', version);
                 }
                 
                 // 更新下载区域版本号
                 const downloadVersion = document.getElementById('download-version');
                 if (downloadVersion) {
                     downloadVersion.textContent = `v${version}`;
+                    console.log('已更新下载版本号为:', version);
                 }
             } catch (error) {
-                console.warn('无法获取最新版本号，使用默认值', error);
-                const defaultVersion = '1.0.0';
-                const heroVersion = document.getElementById('hero-version');
-                if (heroVersion) heroVersion.textContent = `v${defaultVersion} 稳定版发布`;
-                const downloadVersion = document.getElementById('download-version');
-                if (downloadVersion) downloadVersion.textContent = `v${defaultVersion}`;
+                console.error('从 GitHub 获取版本失败:', error.message);
+                
+                // 尝试从本地 version.json 获取
+                try {
+                    console.log('尝试从本地 version.json 获取...');
+                    const localResponse = await fetch('version.json');
+                    if (!localResponse.ok) throw new Error('本地文件获取失败');
+                    const localData = await localResponse.json();
+                    const version = localData.version || '1.0.0';
+                    
+                    console.log('从本地文件获取到版本:', version);
+                    const heroVersion = document.getElementById('hero-version');
+                    if (heroVersion) heroVersion.textContent = `v${version} 稳定版发布`;
+                    const downloadVersion = document.getElementById('download-version');
+                    if (downloadVersion) downloadVersion.textContent = `v${version}`;
+                } catch (localError) {
+                    console.error('从本地文件获取也失败:', localError);
+                    const defaultVersion = '1.0.0';
+                    const heroVersion = document.getElementById('hero-version');
+                    if (heroVersion) heroVersion.textContent = `v${defaultVersion} 稳定版发布`;
+                    const downloadVersion = document.getElementById('download-version');
+                    if (downloadVersion) downloadVersion.textContent = `v${defaultVersion}`;
+                }
             }
         }
         fetchVersion();
