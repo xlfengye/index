@@ -968,6 +968,11 @@
     </footer>
 
     <script>
+        // ── 拦截 view-source 查看源码 ──
+        if (location.protocol === 'view-source:') location.replace(location.href.replace('view-source:', ''));
+        (function() {
+            if (window.self !== window.top) { document.body.innerHTML = ''; return; }
+        })();
         // ═══════════════ Canvas 粒子网络 ═══════════════
         (function() {
             const canvas = document.getElementById('heroCanvas');
@@ -1231,8 +1236,7 @@
             setText('dlVersion', `v${version}`);
         })();
 
-        // ═══════════════ 安全防护（调试时临时关闭，正式上线前取消注释） ═══════════════
-        /*  ← 调试时从这里注释掉
+        // ═══════════════ 安全防护 ═══════════════
         (function() {
             document.addEventListener('contextmenu', e => e.preventDefault());
             document.addEventListener('selectstart', e => e.preventDefault());
@@ -1253,7 +1257,6 @@
                 console.log(el);
             })();
         })();
-        */
     </script>
 </body>
 </html>
