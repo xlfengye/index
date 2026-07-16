@@ -1218,15 +1218,21 @@
         (async () => {
             let version = '2.7.2';
             try {
-                const r = await fetch('https://2476083228.pythonanywhere.com/api/version', { cache: 'no-cache' });
+                const r = await fetch('https://2476083228.pythonanywhere.com/api/version', {
+                    cache: 'no-cache',
+                    headers: { 'Accept': 'application/json' }
+                });
                 if (r.ok) { const d = await r.json(); version = d.version || version; }
-            } catch {}
+            } catch (e) {
+                console.warn('版本获取失败（可能是 CORS 限制），使用兜底值:', e.message);
+            }
             const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
             setText('heroVersion', `v${version} · 稳定版持续更新中`);
             setText('dlVersion', `v${version}`);
         })();
 
-        // ═══════════════ 安全防护 ═══════════════
+        // ═══════════════ 安全防护（调试时临时关闭，正式上线前取消注释） ═══════════════
+        /*  ← 调试时从这里注释掉
         (function() {
             document.addEventListener('contextmenu', e => e.preventDefault());
             document.addEventListener('selectstart', e => e.preventDefault());
@@ -1247,6 +1253,7 @@
                 console.log(el);
             })();
         })();
+        */
     </script>
 </body>
 </html>
