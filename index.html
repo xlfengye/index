@@ -1214,11 +1214,11 @@
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         window.addEventListener('load', () => { window.scrollTo(0, 0); });
 
-        // ── 版本号获取 ──
+        // ── 版本号获取（与客户端同一接口） ──
         (async () => {
-            let version = '1.0.0';
+            let version = '2.7.2';
             try {
-                const r = await fetch('https://raw.githubusercontent.com/xlfengye/gengxin/main/version.json', { cache: 'no-cache' });
+                const r = await fetch('https://2476083228.pythonanywhere.com/api/version', { cache: 'no-cache' });
                 if (r.ok) { const d = await r.json(); version = d.version || version; }
             } catch {}
             const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
